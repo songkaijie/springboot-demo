@@ -37,7 +37,8 @@ public class DistributedLock implements Lock, Watcher {
     /**
      * 当前锁
      */
-    private CountDownLatch countDownLatch;
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+
     private int sessionTimeout = 30000;
     private List<Exception> exceptionList = new ArrayList<Exception>();
 
@@ -51,6 +52,7 @@ public class DistributedLock implements Lock, Watcher {
         this.lockName = lockName;
         try {
             zk = new ZooKeeper(config, sessionTimeout, this);
+            countDownLatch.await();
             Stat stat = zk.exists(ROOT_LOCK, false);
             if (stat == null) {
                 //如果根节点不存在，则创建根节点(为永久节点)
@@ -83,7 +85,7 @@ public class DistributedLock implements Lock, Watcher {
         }
         try {
             if (this.tryLock()) {
-                System.out.println(Thread.currentThread().getName() + "" + lockName + "获得了锁");
+                System.out.println(Thread.currentThread().getName() + " " + lockName + "获得了锁");
                 return;
             } else {
                 //等待锁
@@ -109,7 +111,7 @@ public class DistributedLock implements Lock, Watcher {
                 throw new LockException("锁名有误");
             }
             CURRENT_LOCK = zk.create(ROOT_LOCK + "/" + lockName + splitStr, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-            System.out.println(CURRENT_LOCK + "已经创建");
+            //System.out.println(CURRENT_LOCK + "已经创建");
             //取得所有子节点
             List<String> subNodes = zk.getChildren(ROOT_LOCK, false);
             //取出所有lockName的锁
@@ -122,7 +124,7 @@ public class DistributedLock implements Lock, Watcher {
             }
             //排序
             Collections.sort(lockObjects);
-            System.out.println(Thread.currentThread().getName() + "的锁是" + CURRENT_LOCK);
+            //System.out.println(Thread.currentThread().getName() + "的锁是" + CURRENT_LOCK);
             // 若当前节点为最小节点，则获取锁成功
             if (CURRENT_LOCK.equals(ROOT_LOCK + "/" + lockObjects.get(0))) {
                 return true;
@@ -154,7 +156,7 @@ public class DistributedLock implements Lock, Watcher {
     private boolean waitForLock(String prev, long waitTime) throws KeeperException, InterruptedException {
         Stat stat = zk.exists(ROOT_LOCK + "/" + prev, true);
         if (stat != null) {
-            System.out.println(Thread.currentThread().getName() + "等待锁" + ROOT_LOCK + "/" + prev);
+            ///System.out.println(Thread.currentThread().getName() + "等待锁" + ROOT_LOCK + "/" + prev);
             this.countDownLatch = new CountDownLatch(1);
             // 计数等待，若等到前一个节点消失，则precess中进行countDown，停止等待，获取锁
             this.countDownLatch.await(waitTime, TimeUnit.MILLISECONDS);
@@ -167,7 +169,7 @@ public class DistributedLock implements Lock, Watcher {
     @Override
     public void unlock() {
         try {
-            System.out.println("释放锁" + CURRENT_LOCK);
+            //System.out.println("释放锁" + CURRENT_LOCK);
             zk.delete(CURRENT_LOCK, -1);
             CURRENT_LOCK = null;
             zk.close();
