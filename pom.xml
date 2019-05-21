@@ -129,19 +129,6 @@
             <version>3.0.3</version>
         </dependency>
 
-        <!-- CXF webservice -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
-            <version>3.1.11</version>
-        </dependency>
-        <!-- CXF webservice -->
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>3.1.11</version>
-        </dependency>
     </dependencies>
 
     <build>
