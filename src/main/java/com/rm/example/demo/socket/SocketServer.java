@@ -32,12 +32,12 @@ public class SocketServer {
             sb.append(new String(bytes, 0, len, "UTF-8"));
         }
         log.info("get message from client:" + sb);
-
         OutputStream outputStream = socket.getOutputStream();
         outputStream.write("Hello Client,I get the message".getBytes("UTF-8"));
 
         inputStream.close();
         outputStream.close();
+        inputStream.close();
         socket.close();
         server.close();
 
