@@ -90,6 +90,7 @@
             <artifactId>commons-io</artifactId>
             <version>1.3.2</version>
         </dependency>
+
         <!--POI-->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -128,7 +129,6 @@
             <artifactId>easypoi-annotation</artifactId>
             <version>3.0.3</version>
         </dependency>
-
     </dependencies>
 
     <build>

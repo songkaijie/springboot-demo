@@ -13,11 +13,14 @@ import java.net.Socket;
 public class SocketClient {
     private static Logger log = Logger.getLogger(SocketClient.class);
 
+
     public static void main(String args[]) throws Exception {
         //要连接的服务端ip地址和端口
         String host = "127.0.0.1";
         int port = 55533;
+
         // 与服务端建立连接
+
         Socket socket = new Socket(host, port);
         OutputStream outputStream = socket.getOutputStream();
         String message = "你好";
